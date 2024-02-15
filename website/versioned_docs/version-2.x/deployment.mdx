@@ -557,17 +557,26 @@ Continuous integration (CI) services are typically used to perform routine tasks
 
 1. Go to https://github.com/settings/tokens and generate a new [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/). When creating the token, grant it the `repo` scope so that it has the permissions it needs.
 2. Using your GitHub account, [add the Travis CI app](https://github.com/marketplace/travis-ci) to the repository you want to activate.
-3. Open your Travis CI dashboard. The URL looks like `https://travis-ci.com/USERNAME/REPO`, and navigate to the `More options > Setting > Environment Variables` section of your repository.
+3. Open your Travis CI dashboard. The URL looks like `https://travis-ci.com/USERNAME/REPO`, and navigate to the `More options > Setting > Environment Variables` section of your repository. Finally, create a new environment variable named `GH_TOKEN` with your newly generated token as its value. Alternatively, you can use SSH for logging in by setting `USE_SSH=true`. For more information on creating a personal access token, refer to the [GitHub documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 4. Create a new environment variable named `GH_TOKEN` with your newly generated token as its value, then `GH_EMAIL` (your email address) and `GH_NAME` (your GitHub username).
 5. Create a `.travis.yml` on the root of your repository with the following:
 
 ```yml title=".travis.yml"
+env:
+  global:
+    - USE_SSH=true
+    - GH_NAME: ${{ secrets.GH_NAME }}
+    - GH_EMAIL: ${{ secrets.GH_EMAIL }}
+    - GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - GIT_USER: ${{ secrets.GIT_USER }}
+    - GIT_PASS: ${{ secrets.GIT_PASS }}
+
 language: node_js
 node_js:
   - 18
 branches:
   only:
-    - main
+  - main
 cache:
   yarn: true
 script:
